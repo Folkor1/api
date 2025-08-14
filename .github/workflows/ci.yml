@@ -9,36 +9,38 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # Восстанавливаем все решения (если их несколько)
       - name: Restore
+        shell: bash
         run: |
           set -e
           SOLNS=$(ls -1 **/*.sln 2>/dev/null || true)
           if [ -z "$SOLNS" ]; then
-            echo "No .sln files found. Looking for .csproj..."
             PROJS=$(git ls-files '*.csproj')
+            [ -z "$PROJS" ] && { echo "No .sln or .csproj found"; exit 1; }
             for p in $PROJS; do dotnet restore "$p"; done
           else
             for s in $SOLNS; do dotnet restore "$s"; done
           fi
 
       - name: Build
+        shell: bash
         run: |
           set -e
           SOLNS=$(ls -1 **/*.sln 2>/dev/null || true)
           if [ -z "$SOLNS" ]; then
             PROJS=$(git ls-files '*.csproj')
-            for p in $PROJS; do dotnet build "$p" --configuration Release --no-restore --nologo; done
+            for p in $PROJS; do dotnet build "$p" -c Release --no-restore --nologo; done
           else
-            for s in $SOLNS; do dotnet build "$s" --configuration Release --no-restore --nologo; done
+            for s in $SOLNS; do dotnet build "$s" -c Release --no-restore --nologo; done
           fi
 
       - name: Test
+        shell: bash
         run: |
           set -e
           TESTS=$(git ls-files '*Tests/*.csproj' '*Test/*.csproj' '*Tests.csproj' 2>/dev/null || true)
           if [ -n "$TESTS" ]; then
-            for t in $TESTS; do dotnet test "$t" --configuration Release --no-build --nologo; done
+            for t in $TESTS; do dotnet test "$t" -c Release --no-build --nologo; done
           else
             echo "No test projects found — skipping."
           fi
