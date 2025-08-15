@@ -1,10 +1,18 @@
 name: ci
 on: [push, pull_request]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive         # КЛЮЧЕВОЕ: тянем подмодули
+          fetch-depth: 0
+          # Если calc-engine приватный и GITHUB_TOKEN не видит его:
+          # token: ${{ secrets.SUBMODULE_TOKEN }}
+
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
