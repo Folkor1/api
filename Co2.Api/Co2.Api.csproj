@@ -12,4 +12,8 @@
     <PackageReference Include="StackExchange.Redis" Version="2.8.58" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\extern\calc-engine\Co2Calc.Engine\Co2Calc.Engine.csproj" />
+  </ItemGroup>
+
 </Project>

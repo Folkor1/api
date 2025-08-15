@@ -5,6 +5,12 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Co2.Api", "Co2.Api\Co2.Api.csproj", "{ACE16934-EC38-49F8-8D9C-C112F2CF2EE1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extern", "extern", "{85E46EA7-A0AF-49F4-8DF9-F6E67879223D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "calc-engine", "calc-engine", "{76210E3A-63D5-4EC2-997D-DFB23314CE1F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Co2Calc.Engine", "extern\calc-engine\Co2Calc.Engine\Co2Calc.Engine.csproj", "{E20F8B87-D25D-4A62-8B4D-264C9D2D2A6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +24,13 @@ Global
 		{ACE16934-EC38-49F8-8D9C-C112F2CF2EE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACE16934-EC38-49F8-8D9C-C112F2CF2EE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ACE16934-EC38-49F8-8D9C-C112F2CF2EE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E20F8B87-D25D-4A62-8B4D-264C9D2D2A6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E20F8B87-D25D-4A62-8B4D-264C9D2D2A6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E20F8B87-D25D-4A62-8B4D-264C9D2D2A6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E20F8B87-D25D-4A62-8B4D-264C9D2D2A6C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{76210E3A-63D5-4EC2-997D-DFB23314CE1F} = {85E46EA7-A0AF-49F4-8DF9-F6E67879223D}
+		{E20F8B87-D25D-4A62-8B4D-264C9D2D2A6C} = {76210E3A-63D5-4EC2-997D-DFB23314CE1F}
 	EndGlobalSection
 EndGlobal
