@@ -1,26 +1,50 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export FACTOR_SOURCE=${FACTOR_SOURCE:-json}
-export FACTOR_JSON_PATH=${FACTOR_JSON_PATH:-$HOME/work/co2/data-pipeline/datasets/factors.json}
-export ASPNETCORE_URLS=${ASPNETCORE_URLS:-http://localhost:5253}
+PORT="${PORT:-5253}"
+BASE_URL="http://localhost:${PORT}"
+HEALTH_URL="${BASE_URL}/healthz"
 
-dotnet run > /tmp/co2api.log 2>&1 &
-PID=$!
+# Источник факторов по умолчанию — JSON (можно переопределить извне)
+export FACTOR_SOURCE="${FACTOR_SOURCE:-json}"
+export FACTOR_JSON_PATH="${FACTOR_JSON_PATH:-$HOME/work/co2/data-pipeline/datasets/factors.json}"
+export ASPNETCORE_URLS="${ASPNETCORE_URLS:-$BASE_URL}"
 
-# ждём живости
+started=0
+pid=""
+
+# Проверим, слушает ли кто-то порт уже
+if ss -tlnp 2>/dev/null | grep -q ":${PORT} "; then
+  echo "[info] порт ${PORT} уже занят — предполагаем, что API запущен отдельно."
+else
+  echo "[info] стартуем API на ${ASPNETCORE_URLS} ..."
+  dotnet run > /tmp/co2api.log 2>&1 &
+  pid=$!
+  started=1
+fi
+
+# Ждём healthz
 for i in {1..40}; do
-  if curl -sf "${ASPNETCORE_URLS}/healthz" >/dev/null; then break; fi
+  if curl -sf "${HEALTH_URL}" >/dev/null; then
+    break
+  fi
   sleep 0.25
 done
 
-echo "[ok] healthz: $(curl -s ${ASPNETCORE_URLS}/healthz)"
+echo "[ok] healthz: $(curl -s "${HEALTH_URL}")"
 
-# тестовый расчёт (пример входа)
-resp=$(curl -s -X POST "${ASPNETCORE_URLS}/v1/calculations/page" \
+# Тестовый расчёт
+resp=$(curl -s -X POST "${BASE_URL}/v1/calculations/page" \
   -H "Content-Type: application/json" \
   -d '{"region":"IE","bytesTransferred":250000000,"cacheHitRate":0.3}')
+
 echo "[ok] calc: $resp"
 
-kill $PID >/dev/null 2>&1 || true
-wait $PID 2>/dev/null || true
+# Останавливаем только то, что запускали сами
+if [ "$started" -eq 1 ] && [ -n "${pid}" ]; then
+  kill "$pid" >/dev/null 2>&1 || true
+  wait "$pid" 2>/dev/null || true
+  echo "[info] API, запущенный скриптом, остановлен."
+else
+  echo "[info] Внешний API оставляем работать."
+fi
